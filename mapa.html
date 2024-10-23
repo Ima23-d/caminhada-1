@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Caminhada</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script>
+        //zoom
+        // Inicializando o mapa
+        const map = L.map('map', {
+        maxZoom: 20 // Define o zoom máximo permitido pelo mapa
+        }).setView([0, 0], 13); // Coordenadas iniciais e zoom padrão
+
+// Adicionando a camada de tiles (mapa base) com maxZoom ajustado
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 20
+    // Define o zoom máximo permitido pela camada de tiles
+}).addTo(map);
+
+let polyline = L.polyline([], { color: 'green' }).addTo(map); // Cria uma linha vazia no início
+
+// Função para desenhar a rota salva
+function drawSavedRoute() {
+    const savedCoordinates = localStorage.getItem('route');
+    const coordinates = savedCoordinates ? JSON.parse(savedCoordinates) : [];
+
+    if (coordinates.length > 0) {
+        polyline.setLatLngs(coordinates); // Desenha a rota salva
+        map.setView(coordinates[0], 15);  // Centraliza o mapa na primeira posição
+        map.fitBounds(polyline.getBounds()); // Ajusta os limites do mapa à rota
+    } else {
+        alert('Nenhuma rota salva encontrada.');
+    }
+
+    // Mostra a distância percorrida
+    const distance = localStorage.getItem('distance') || 0;
+    console.log(`Distância percorrida: ${distance} km`);
+}
+
+// Desenha a rota ao carregar a página
+window.onload = drawSavedRoute;
+
+    </script>
+</body>
+</html>
